@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Strategy Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fdbb2d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #ddd;
+        }
+        
+        .input-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #simulate {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        #simulate:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        #reset {
+            background: #f44336;
+            color: white;
+        }
+        
+        #reset:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fdbb2d;
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .positive {
+            color: #4CAF50;
+        }
+        
+        .negative {
+            color: #f44336;
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .round-log {
+            margin-top: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .strategy-explanation {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        
+        .strategy-explanation h3 {
+            color: #fdbb2d;
+            margin-bottom: 15px;
+        }
+        
+        .strategy-explanation p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .money-stacks {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .money-stack {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            width: 45%;
+        }
+        
+        .money-stack h3 {
+            color: #fdbb2d;
+            margin-bottom: 10px;
+        }
+        
+        .money-amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .session-results {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+        
+        .session-results h3 {
+            color: #fdbb2d;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: #fdbb2d;
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+            
+            .money-stacks {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .money-stack {
+                width: 100%;
+            }
+            
+            .session-results {
+                overflow-x: scroll;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Roulette Strategy Simulator</h1>
+        <p class="description">Test your roulette strategy with session tracking. See how your account balance develops over multiple sessions.</p>
+    </header>
+    
+    <div class="container">
+        <div class="input-section">
+            <div class="input-group">
+                <label for="startingMoney">Starting Money ($)</label>
+                <input type="number" id="startingMoney" min="100" value="1000">
+            </div>
+            
+            <div class="input-group">
+                <label for="waitRounds">Wait Rounds (with no hit)</label>
+                <input type="number" id="waitRounds" min="1" value="5">
+            </div>
+            
+            <div class="input-group">
+                <label for="startingBet">Starting Bet ($)</label>
+                <input type="number" id="startingBet" min="1" value="10">
+            </div>
+            
+            <div class="input-group">
+                <label for="upperBorder">Money Upper Border ($)</label>
+                <input type="number" id="upperBorder" min="100" value="2000">
+            </div>
+            
+            <div class="input-group">
+                <label for="numSessions">Number of Sessions</label>
+                <input type="number" id="numSessions" min="1" value="10">
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="simulate">Run Simulation</button>
+            <button id="reset">Reset</button>
+        </div>
+        
+        <div class="results">
+            <div class="result-card">
+                <div class="result-title">Final Money</div>
+                <div id="finalMoney" class="result-value">$1000</div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-title">Profit / Loss</div>
+                <div id="profitLoss" class="result-value">$0</div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-title">Sessions Completed</div>
+                <div id="sessionsCompleted" class="result-value">0</div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-title">Status</div>
+                <div id="status" class="result-value">Not Started</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Account Balance Over Sessions</h3>
+            <canvas id="chart"></canvas>
+        </div>
+        
+        <div class="session-results">
+            <h3>Session Results</h3>
+            <table id="sessionTable">
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th>Starting Money</th>
+                        <th>Ending Money</th>
+                        <th>Profit/Loss</th>
+                        <th>Rounds</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="sessionTableBody">
+                    <!-- Session data will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="strategy-explanation">
+            <h3>Strategy Explanation</h3>
+            <p>This simulator tests a roulette strategy across multiple sessions:</p>
+            <p>1. Each session starts with your specified starting money</p>
+            <p>2. Wait until a specific third of numbers hasn't hit for a set number of rounds</p>
+            <p>3. Start betting on that third with your starting bet amount</p>
+            <p>4. If you lose, double your bet on the same third in the next round</p>
+            <p>5. If you win, return to your starting bet and wait for another opportunity</p>
+            <p>6. A session ends when you either reach the upper border or can't bet anymore</p>
+            <p>7. Your account balance is tracked across all sessions</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const simulateBtn = document.getElementById('simulate');
+            const resetBtn = document.getElementById('reset');
+            
+            // Result elements
+            const finalMoneyEl = document.getElementById('finalMoney');
+            const profitLossEl = document.getElementById('profitLoss');
+            const sessionsCompletedEl = document.getElementById('sessionsCompleted');
+            const statusEl = document.getElementById('status');
+            const sessionTableBodyEl = document.getElementById('sessionTableBody');
+            
+            // Chart initialization
+            const ctx = document.getElementById('chart').getContext('2d');
+            let chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Account Balance',
+                        data: [],
+                        borderColor: '#4CAF50',
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#4CAF50',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#fff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Store session results
+            let sessionResults = [];
+            
+            // Simulation function
+            function runSimulation() {
+                // Clear previous results
+                sessionTableBodyEl.innerHTML = '';
+                sessionResults = [];
+                statusEl.textContent = 'Running...';
+                statusEl.className = 'result-value';
+                
+                // Get input values
+                const startingMoney = parseInt(document.getElementById('startingMoney').value);
+                const waitRounds = parseInt(document.getElementById('waitRounds').value);
+                const startingBet = parseInt(document.getElementById('startingBet').value);
+                const upperBorder = parseInt(document.getElementById('upperBorder').value);
+                const numSessions = parseInt(document.getElementById('numSessions').value);
+                
+                // Validate inputs
+                if (startingMoney <= 0 || waitRounds <= 0 || startingBet <= 0 || upperBorder <= 0 || numSessions <= 0) {
+                    alert('Please enter valid values (greater than 0)');
+                    return;
+                }
+                
+                if (startingBet > startingMoney) {
+                    alert('Starting bet cannot be greater than starting money');
+                    return;
+                }
+                
+                if (upperBorder <= startingMoney) {
+                    alert('Upper border must be greater than starting money');
+                    return;
+                }
+                
+                // Initialize account balance
+                let accountBalance = startingMoney;
+                let sessionsCompleted = 0;
+                
+                // Initialize chart data
+                let accountHistory = [accountBalance];
+                let sessionLabels = ['Start'];
+                
+                // Run the specified number of sessions
+                for (let session = 1; session <= numSessions; session++) {
+                    // Run a single session
+                    const sessionResult = runSession(accountBalance, waitRounds, startingBet, upperBorder, session);
+                    
+                    // Update account balance with session result
+                    accountBalance = sessionResult.endingMoney;
+                    sessionsCompleted++;
+                    
+                    // Store session result
+                    sessionResults.push({
+                        session: session,
+                        startingMoney: sessionResult.startingMoney,
+                        endingMoney: sessionResult.endingMoney,
+                        profitLoss: sessionResult.endingMoney - sessionResult.startingMoney,
+                        rounds: sessionResult.rounds,
+                        status: sessionResult.status
+                    });
+                    
+                    // Update chart data
+                    accountHistory.push(accountBalance);
+                    sessionLabels.push(`Session ${session}`);
+                    
+                    // Stop if we're out of money
+                    if (accountBalance < startingBet) {
+                        statusEl.textContent = 'Out of money';
+                        statusEl.className = 'result-value negative';
+                        break;
+                    }
+                }
+                
+                // Update results
+                finalMoneyEl.textContent = `$${accountBalance}`;
+                profitLossEl.textContent = `$${accountBalance - startingMoney}`;
+                profitLossEl.className = `result-value ${accountBalance >= startingMoney ? 'positive' : 'negative'}`;
+                sessionsCompletedEl.textContent = sessionsCompleted;
+                
+                if (sessionsCompleted === numSessions) {
+                    statusEl.textContent = 'All sessions completed';
+                    statusEl.className = 'result-value positive';
+                }
+                
+                // Update chart
+                chart.data.labels = sessionLabels;
+                chart.data.datasets[0].data = accountHistory;
+                chart.update();
+                
+                // Display session results in table
+                displaySessionResults();
+            }
+            
+            // Run a single session
+            function runSession(startingMoney, waitRounds, startingBet, upperBorder, sessionNum) {
+                let currentMoney = startingMoney;
+                let currentBet = 0;
+                let missedRounds = 0;
+                let targetThird = Math.floor(Math.random() * 3); // 0, 1, or 2
+                let rounds = 0;
+                let isWaiting = true;
+                let status = "Insufficient funds";
+                
+                // Run session until conditions are met
+                while (currentMoney >= startingBet && currentMoney < upperBorder && rounds < 500) {
+                    rounds++;
+                    
+                    // Spin the roulette
+                    const spin = Math.floor(Math.random() * 37); // 0-36 (European roulette)
+                    const spinThird = getNumberThird(spin);
+                    
+                    if (isWaiting) {
+                        // We're in waiting phase
+                        if (spinThird !== targetThird) {
+                            missedRounds++;
+                            
+                            if (missedRounds >= waitRounds) {
+                                isWaiting = false;
+                                currentBet = startingBet;
+                            }
+                        } else {
+                            missedRounds = 0;
+                        }
+                    } else {
+                        // We're in betting phase
+                        currentMoney -= currentBet;
+                        
+                        if (spinThird === targetThird) {
+                            // Win
+                            const winAmount = currentBet * 3; // Pays 2:1 for dozen bets
+                            currentMoney += winAmount;
+                            
+                            // Reset after win
+                            currentBet = startingBet;
+                            missedRounds = 0;
+                            isWaiting = true;
+                            targetThird = Math.floor(Math.random() * 3);
+                        } else {
+                            // Loss
+                            // Double the bet for next round (Martingale)
+                            if (currentBet * 2 > currentMoney) {
+                                break;
+                            }
+                            
+                            currentBet *= 2;
+                        }
+                    }
+                }
+                
+                // Determine session status
+                if (currentMoney >= upperBorder) {
+                    status = "Upper border reached";
+                } else if (currentMoney < startingBet) {
+                    status = "Insufficient funds";
+                } else if (rounds >= 500) {
+                    status = "Round limit reached";
+                } else {
+                    status = "Completed";
+                }
+                
+                return {
+                    startingMoney: startingMoney,
+                    endingMoney: currentMoney,
+                    rounds: rounds,
+                    status: status
+                };
+            }
+            
+            // Display session results in table
+            function displaySessionResults() {
+                sessionTableBodyEl.innerHTML = '';
+                
+                sessionResults.forEach(result => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${result.session}</td>
+                        <td>$${result.startingMoney}</td>
+                        <td>$${result.endingMoney}</td>
+                        <td class="${result.profitLoss >= 0 ? 'positive' : 'negative'}">$${result.profitLoss}</td>
+                        <td>${result.rounds}</td>
+                        <td>${result.status}</td>
+                    `;
+                    
+                    sessionTableBodyEl.appendChild(row);
+                });
+            }
+            
+            // Helper function to determine which third a number belongs to
+            function getNumberThird(number) {
+                if (number === 0) return -1; // Zero is not in any third
+                if (number <= 12) return 0;
+                if (number <= 24) return 1;
+                return 2;
+            }
+            
+            // Reset simulation
+            function resetSimulation() {
+                finalMoneyEl.textContent = '$1000';
+                profitLossEl.textContent = '$0';
+                profitLossEl.className = 'result-value';
+                sessionsCompletedEl.textContent = '0';
+                statusEl.textContent = 'Not Started';
+                statusEl.className = 'result-value';
+                sessionTableBodyEl.innerHTML = '';
+                
+                // Reset chart
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+                
+                // Reset input values
+                document.getElementById('startingMoney').value = '1000';
+                document.getElementById('waitRounds').value = '5';
+                document.getElementById('startingBet').value = '10';
+                document.getElementById('upperBorder').value = '2000';
+                document.getElementById('numSessions').value = '10';
+                
+                // Clear session results
+                sessionResults = [];
+            }
+            
+            // Event listeners
+            simulateBtn.addEventListener('click', runSimulation);
+            resetBtn.addEventListener('click', resetSimulation);
+        });
+    </script>
+</body>
+</html>
